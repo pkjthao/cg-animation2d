@@ -13,6 +13,10 @@ function mat3x3Identity(mat3x3) {
 // Set values of existing 3x3 matrix to the translate matrix
 function mat3x3Translate(mat3x3, tx, ty) {
     // mat3x3.values = ...;
+    //mat3x3.values = mat3x3Identity(mat3x3);
+    mat3x3.values[0][2] = tx;
+    mat3x3.values[1][2] = ty;
+    return mat3x3;
 }
 
 // Set values of existing 3x3 matrix to the scale matrix

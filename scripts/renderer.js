@@ -1,4 +1,5 @@
 import * as CG from './transforms.js';
+import { Matrix } from "./matrix.js";
 
 class Renderer {
     // canvas:              object ({id: __, width: __, height: __})
@@ -15,17 +16,39 @@ class Renderer {
         this.start_time = null;
         this.prev_time = null;
 
+        let a = 0;
+        let angle = 360 / 40;
+        let center = {x: 300, y: 300};
+        let x;
+        let y;
+        let points = [];
+
+        for(let i = 0; i <= 40; i++) {
+            x = parseInt(center.x + 100 * Math.cos(a * Math.PI / 180));
+            y = parseInt(center.y + 100 * Math.sin(a * Math.PI / 180));
+            points[i] = CG.Vector3(x, y, 1);
+            a += angle;
+        }
+
+        let matrix = new Matrix(3, 3);
+        matrix = CG.mat3x3Translate(matrix, 5, 4);
+        console.log(matrix);
+
+
         this.models = {
             slide0: [
                 // example model (diamond) -> should be replaced with actual model
                 {
-                    vertices: [
-                        CG.Vector3(400, 150, 1),
-                        CG.Vector3(500, 300, 1),
-                        CG.Vector3(400, 450, 1),
-                        CG.Vector3(300, 300, 1)
-                    ],
-                    transform: null
+                    // vertices: [
+                    //     CG.Vector3(400, 150, 1),
+                    //     CG.Vector3(500, 300, 1),
+                    //     CG.Vector3(400, 450, 1),
+                    //     CG.Vector3(300, 300, 1)
+                    // ],
+                    // transform: null
+
+                    vertices: points,
+                    transform: matrix
                 }
             ],
             slide1: [],
@@ -113,10 +136,18 @@ class Renderer {
         // TODO: draw bouncing ball (circle that changes direction whenever it hits an edge)
         
         
-        // Following lines are example of drawing a single polygon
-        // (this should be removed/edited after you implement the slide)
         let teal = [0, 128, 128, 255];
         this.drawConvexPolygon(this.models.slide0[0].vertices, teal);
+
+        for (let i = 0; i < this.models.slide0[0].vertices.length; i++) {
+            this.models.slide0[0].vertices[i] = this.models.slide0[0].transform.mult(this.models.slide0[0].vertices[i]);
+        }
+        console.log(this.models.slide0[0].vertices);
+        // let matrix = new Matrix(3, 3);
+        // matrix = CG.mat3x3Translate(matrix, 50, 40);
+        // console.log(matrix);
+        //console.log(CG.mat3x3Translate(matrix, 50, 40));
+    
     }
 
     //
