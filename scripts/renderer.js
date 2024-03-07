@@ -21,18 +21,17 @@ class Renderer {
         let center = {x: 300, y: 300};
         let x;
         let y;
-        let points = [];
+        let circle_points = [];
 
         for(let i = 0; i <= 40; i++) {
             x = parseInt(center.x + 100 * Math.cos(a * Math.PI / 180));
             y = parseInt(center.y + 100 * Math.sin(a * Math.PI / 180));
-            points[i] = CG.Vector3(x, y, 1);
+            circle_points[i] = CG.Vector3(x, y, 1);
             a += angle;
         }
 
-        let matrix = new Matrix(3, 3);
-        matrix = CG.mat3x3Translate(matrix, 5, 4);
-        console.log(matrix);
+        let bounce_matrix = new Matrix(3, 3);
+       bounce_matrix = CG.mat3x3Translate(bounce_matrix, 5, 2);
 
 
         this.models = {
@@ -47,8 +46,8 @@ class Renderer {
                     // ],
                     // transform: null
 
-                    vertices: points,
-                    transform: matrix
+                    vertices: circle_points,
+                    transform: bounce_matrix
                 }
             ],
             slide1: [],
@@ -135,6 +134,16 @@ class Renderer {
     drawSlide0() {
         // TODO: draw bouncing ball (circle that changes direction whenever it hits an edge)
         
+        for (let i = 0; i < this.models.slide0[0].vertices.length; i++) {
+            if (this.models.slide0[0].vertices[i].values[0] > this.canvas.width || this.models.slide0[0].vertices[i].values[0] < 0) {
+                this.models.slide0[0].transform.values[0][2] = this.models.slide0[0].transform.values[0][2] * -1;
+                break;
+            }
+            if (this.models.slide0[0].vertices[i].values[1] > this.canvas.height || this.models.slide0[0].vertices[i].values[1] < 0) {
+                this.models.slide0[0].transform.values[1][2] = this.models.slide0[0].transform.values[1][2] * -1;
+                break;
+            }
+        }
         
         let teal = [0, 128, 128, 255];
         this.drawConvexPolygon(this.models.slide0[0].vertices, teal);
@@ -142,11 +151,8 @@ class Renderer {
         for (let i = 0; i < this.models.slide0[0].vertices.length; i++) {
             this.models.slide0[0].vertices[i] = this.models.slide0[0].transform.mult(this.models.slide0[0].vertices[i]);
         }
-        console.log(this.models.slide0[0].vertices);
-        // let matrix = new Matrix(3, 3);
-        // matrix = CG.mat3x3Translate(matrix, 50, 40);
-        // console.log(matrix);
-        //console.log(CG.mat3x3Translate(matrix, 50, 40));
+       
+        //console.log(this.models.slide0[0].transform.values[0][2]);
     
     }
 
