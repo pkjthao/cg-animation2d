@@ -15,6 +15,9 @@ class Renderer {
         this.fps = fps;
         this.start_time = null;
         this.prev_time = null;
+        this.transX = 5;
+        this.transY = 2;
+        this.angle = 5;
 
         let a = 0;
         let angle = 360 / 40;
@@ -31,7 +34,10 @@ class Renderer {
         }
 
         let bounce_matrix = new Matrix(3, 3);
-       bounce_matrix = CG.mat3x3Translate(bounce_matrix, 5, 2);
+        bounce_matrix = CG.mat3x3Translate(bounce_matrix, 2, 1);
+
+        let spin_matrix1 = new Matrix(3, 3);
+        spin_matrix1 = CG.mat3x3Rotate(spin_matrix1, this.angle * Math.PI /180);
 
 
         this.models = {
@@ -50,7 +56,17 @@ class Renderer {
                     transform: bounce_matrix
                 }
             ],
-            slide1: [],
+            slide1: [
+                {
+                    shape1: [
+                        CG.Vector3(400, 150, 1),
+                        CG.Vector3(550, 150, 1),
+                        CG.Vector3(550, 300, 1),
+                        CG.Vector3(400, 300, 1)
+                    ],
+                    transform1: spin_matrix1
+                }
+            ],
             slide2: [],
             slide3: []
         };
@@ -108,12 +124,29 @@ class Renderer {
     //
     updateTransforms(time, delta_time) {
         // TODO: update any transformations needed for animation
+        switch (this.slide_idx) {
+            case 0:
+                this.models.slide0[0].transform.values[0][2] += this.transX;
+                this.models.slide0[0].transform.values[1][2] += this.transY;      
+                break;
+            case 1:
+                this.angle += 5;
+                this.models.slide1[0].transform1 = CG.mat3x3Rotate(this.models.slide1[0].transform1, this.angle);
+                //console.log(this.models.slide1[0].transform1);
+                break;
+            case 2:
+                
+                break;
+            case 3:
+                
+                break;
+        }
     }
     
     //
     drawSlide() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
+        
         switch (this.slide_idx) {
             case 0:
                 this.drawSlide0();
@@ -133,26 +166,27 @@ class Renderer {
     //
     drawSlide0() {
         // TODO: draw bouncing ball (circle that changes direction whenever it hits an edge)
-        
-        for (let i = 0; i < this.models.slide0[0].vertices.length; i++) {
-            if (this.models.slide0[0].vertices[i].values[0] > this.canvas.width || this.models.slide0[0].vertices[i].values[0] < 0) {
-                this.models.slide0[0].transform.values[0][2] = this.models.slide0[0].transform.values[0][2] * -1;
-                break;
-            }
-            if (this.models.slide0[0].vertices[i].values[1] > this.canvas.height || this.models.slide0[0].vertices[i].values[1] < 0) {
-                this.models.slide0[0].transform.values[1][2] = this.models.slide0[0].transform.values[1][2] * -1;
-                break;
-            }
-        }
-        
-        let teal = [0, 128, 128, 255];
-        this.drawConvexPolygon(this.models.slide0[0].vertices, teal);
+
+        let points = [];
+        let transform = this.models.slide0[0].transform;
+        //console.log(this.models.slide0[0].vertices[0]);
 
         for (let i = 0; i < this.models.slide0[0].vertices.length; i++) {
-            this.models.slide0[0].vertices[i] = this.models.slide0[0].transform.mult(this.models.slide0[0].vertices[i]);
+            let v = transform.mult(this.models.slide0[0].vertices[i]);
+            //console.log(v.values[0]);
+            if (v.values[0] > this.canvas.width - 200 || v.values[0] < 0) {
+                this.transX *= -1;
+            }
+            if (v.values[1] > this.canvas.height || v.values[1] < 0) {
+                this.transY *= -1;
+            }
+
+            points[i] = v;
         }
-       
-        //console.log(this.models.slide0[0].transform.values[0][2]);
+
+        let teal = [0, 128, 128, 255];
+        this.drawConvexPolygon(points, teal);
+        //onsole.log(points[0].values[0][0]);
     
     }
 
@@ -160,6 +194,17 @@ class Renderer {
     drawSlide1() {
         // TODO: draw at least 3 polygons that spin about their own centers
         //   - have each polygon spin at a different speed / direction
+
+        let points = [];
+        
+        for (let i = 0; i < this.models.slide1[0].shape1.length; i++) {
+            let v = this.models.slide1[0].transform1.mult(this.models.slide1[0].shape1[i]);
+            points[i] = v;
+        }
+        console.log(this.models.slide1[0].shape1[0]);
+        let color = [0, 128, 128, 255];
+        this.drawConvexPolygon(points, color);
+
         
         
     }
