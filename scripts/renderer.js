@@ -17,7 +17,7 @@ class Renderer {
         this.prev_time = null;
         this.transX = 5;
         this.transY = 2;
-        this.angle = 5;
+        this.angle = 1;
 
         let a = 0;
         let angle = 360 / 40;
@@ -36,8 +36,13 @@ class Renderer {
         let bounce_matrix = new Matrix(3, 3);
         bounce_matrix = CG.mat3x3Translate(bounce_matrix, 2, 1);
 
-        let spin_matrix1 = new Matrix(3, 3);
-        spin_matrix1 = CG.mat3x3Rotate(spin_matrix1, this.angle * Math.PI /180);
+        this.spin_matrix_trans = new Matrix(3, 3);
+        this.spin_matrix_trans = CG.mat3x3Translate(this.spin_matrix_trans, 400, 300);
+
+        this.spin_matrix_angel1 = new Matrix(3, 3);
+        this.spin_matrix_angel1 = CG.mat3x3Rotate(this.spin_matrix_angel1, this.angle * Math.PI /180);
+
+        let spin_matrix1 = this.spin_matrix_trans.mult(this.spin_matrix_angel1);
 
 
         this.models = {
@@ -59,10 +64,10 @@ class Renderer {
             slide1: [
                 {
                     shape1: [
-                        CG.Vector3(400, 150, 1),
-                        CG.Vector3(550, 150, 1),
-                        CG.Vector3(550, 300, 1),
-                        CG.Vector3(400, 300, 1)
+                        CG.Vector3(100, 100, 1),
+                        CG.Vector3(-100, 100, 1),
+                        CG.Vector3(-100, -100, 1),
+                        CG.Vector3(100, -100, 1)
                     ],
                     transform1: spin_matrix1
                 }
@@ -130,8 +135,9 @@ class Renderer {
                 this.models.slide0[0].transform.values[1][2] += this.transY;      
                 break;
             case 1:
-                this.angle += 5;
-                this.models.slide1[0].transform1 = CG.mat3x3Rotate(this.models.slide1[0].transform1, this.angle);
+                this.angle += 0.1;
+                this.spin_matrix_angel1 = CG.mat3x3Rotate(this.spin_matrix_angel1, this.angle);
+                this.models.slide1[0].transform1 = this.spin_matrix_trans.mult(this.spin_matrix_angel1);
                 //console.log(this.models.slide1[0].transform1);
                 break;
             case 2:
