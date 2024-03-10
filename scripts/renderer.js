@@ -25,6 +25,12 @@ class Renderer {
         let spin_matrix = [];
         this.s1_colors = []
 
+        this.grow = [1.1];
+        this.shrink = [0.9];
+        this.scale_matrix_trans = [];
+        this.scale_matrix_angel = [];
+        let scale_matrix = [];
+
         //slide 0 model
         let a = 0;
         let sides = 360 / 40;
@@ -42,6 +48,15 @@ class Renderer {
 
         let bounce_matrix = new Matrix(3, 3);
         bounce_matrix = CG.mat3x3Translate(bounce_matrix, 2, 1);
+
+        //slide 2 models (SCALE)
+        this.scale_matrix_trans[0] = new Matrix(3, 3);
+        this.scale_matrix_trans[0] = CG.mat3x3Translate(this.scale_matrix_trans[0], 250, 400);
+
+        this.scale_matrix_angel[0] = new Matrix(3, 3);
+        this.scale_matrix_angel[0] = CG.mat3x3Scale(this.scale_matrix_angel[0], this.shrink[0]);
+        
+        scale_matrix[0] = this.scale_matrix_trans[0].mult(this.scale_matrix_angel[0]);
 
 
         //slide 1 models
@@ -133,7 +148,18 @@ class Renderer {
                     //transform2: spin_matrix[1]
                 }
             ],
-            slide2: [],
+            slide2: [
+                {
+                    shapes: [[
+                        CG.Vector3(100, 100, 1),
+                        CG.Vector3(-100, 100, 1),
+                        CG.Vector3(-100, -100, 1),
+                        CG.Vector3(100, -100, 1)
+                    ]],
+                
+                transform: [scale_matrix[0]],
+                }
+            ],
             slide3: []
         };
     }
@@ -206,7 +232,14 @@ class Renderer {
                 }
                 break;
             case 2:
-                
+                this.shrink[0] -= 0.03;
+                this.grow[0] -= 0.02;
+
+                for (let i = 0; i < 1; i++) {
+                    this.scale_matrix_angel[i] = CG.mat3x3Scale(this.scale_matrix_angel[i], this.shrink[i], this.shrink[i]);
+                    this.models.slide2[0].transform[i] = this.scale_matrix_trans[i].mult(this.scale_matrix_angel[i]);
+                }
+
                 break;
             case 3:
                 
@@ -284,7 +317,14 @@ class Renderer {
         //   - have each polygon grow / shrink different sizes
         //   - try at least 1 polygon that grows / shrinks non-uniformly in the x and y directions
 
-
+        let points = [];
+        //shape 1
+        for (let i = 0; i < this.models.slide2[0].shapes[0].length; i++) {
+            let v = this.models.slide2[0].transform[0].mult(this.models.slide2[0].shapes[0][i]);
+            points[i] = v;
+        }
+        let color = [0, 128, 128, 255];
+        this.drawConvexPolygon(points, color);
     }
 
     //
