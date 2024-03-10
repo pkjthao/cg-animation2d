@@ -19,10 +19,11 @@ class Renderer {
         this.transX = 5;
         this.transY = 2;
 
-        this.angle = [1, 0.1, 0];
+        this.angle = [0, 0, 0];
         this.spin_matrix_trans = [];
         this.spin_matrix_angel = [];
         let spin_matrix = [];
+        this.s1_colors = []
 
         //slide 0 model
         let a = 0;
@@ -44,6 +45,9 @@ class Renderer {
 
 
         //slide 1 models
+        for (let i = 0; i < 3; i++) {
+            this.s1_colors[i] = [Math.floor(Math.random() * 225), Math.floor(Math.random() * 225), Math.floor(Math.random() * 225), 255];
+        }
         //model 1
         this.spin_matrix_trans[0] = new Matrix(3, 3);
         this.spin_matrix_trans[0] = CG.mat3x3Translate(this.spin_matrix_trans[0], 150, 300);
@@ -79,14 +83,14 @@ class Renderer {
 
         let s1_shape3_points = [];
         for(let i = 0; i <= 5; i++) {
-            x = parseInt(center.x + 100 * Math.cos(a * Math.PI / 180));
-            y = parseInt(center.y + 100 * Math.sin(a * Math.PI / 180));
+            x = parseInt(center.x + 150 * Math.cos(a * Math.PI / 180));
+            y = parseInt(center.y + 150 * Math.sin(a * Math.PI / 180));
             s1_shape3_points.push(CG.Vector3(x, y, 1));
 
             a += sides;
 
-            x = parseInt(center.x + 50 * Math.cos(a * Math.PI / 180));
-            y = parseInt(center.y + 50 * Math.sin(a * Math.PI / 180));
+            x = parseInt(center.x + 80 * Math.cos(a * Math.PI / 180));
+            y = parseInt(center.y + 80 * Math.sin(a * Math.PI / 180));
             s1_shape3_points.push(CG.Vector3(x, y, 1));
 
             a += sides;
@@ -194,7 +198,7 @@ class Renderer {
             case 1:
                 this.angle[0] += 0.1;
                 this.angle[1] += 0.01;
-                this.angle[2] -= 0.1;
+                this.angle[2] -= 0.05;
 
                 for (let i = 0; i < 3; i++) {
                     this.spin_matrix_angel[i] = CG.mat3x3Rotate(this.spin_matrix_angel[i], this.angle[i]);
@@ -262,31 +266,15 @@ class Renderer {
         // TODO: draw at least 3 polygons that spin about their own centers
         //   - have each polygon spin at a different speed / direction
 
-        let points = [];
-        //shape 1
-        for (let i = 0; i < this.models.slide1[0].shapes[0].length; i++) {
-            let v = this.models.slide1[0].transform[0].mult(this.models.slide1[0].shapes[0][i]);
-            points[i] = v;
-        }
-        let color = [0, 128, 128, 255];
-        this.drawConvexPolygon(points, color);
-
-        //shape 2
-        for (let i = 0; i < this.models.slide1[0].shapes[1].length; i++) {
-            let v = this.models.slide1[0].transform[1].mult(this.models.slide1[0].shapes[1][i]);
-            points[i] = v;
-        }
-        color = [Math.floor(Math.random() * 225), Math.floor(Math.random() * 225), Math.floor(Math.random() * 225), 255];
-        this.drawConvexPolygon(points, color);
-
-        //shape 3
-        for (let i = 0; i < this.models.slide1[0].shapes[2].length; i++) {
-            let v = this.models.slide1[0].transform[2].mult(this.models.slide1[0].shapes[2][i]);
-            points[i] = v;
-        }
-        color = [100, 128, 128, 255];
-        this.drawConvexPolygon(points, color);
-        
+        for (let i = 0; i < 3; i++) {
+            let points = [];
+            
+            for (let j = 0; j < this.models.slide1[0].shapes[i].length; j++) {
+                let v = this.models.slide1[0].transform[i].mult(this.models.slide1[0].shapes[i][j]);
+                points[j] = v;
+            }
+            this.drawConvexPolygon(points, this.s1_colors[i]);
+        }      
         
     }
 
