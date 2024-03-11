@@ -25,7 +25,13 @@ class Renderer {
         this.spin_matrix_trans = [];
         this.spin_matrix_angel = [];
         let spin_matrix = [];
-        this.s1_colors = []
+        this.s1_colors = [];
+
+        this.angle1 = [0];
+        this.spin_matrix_trans1 = [];
+        this.spin_matrix_angel1 = [];
+        let spin_matrix2 = [];
+
 
         //slide 2
         this.grow = [1.1];
@@ -54,7 +60,7 @@ class Renderer {
 
         //slide 1 models
         for (let i = 0; i < 3; i++) {
-            this.s1_colors[i] = [Math.floor(Math.random() * 225), Math.floor(Math.random() * 225), Math.floor(Math.random() * 225), 255];
+            this.s1_colors[i] = [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), 255];
         }
         //model 1
         this.spin_matrix_trans[0] = new Matrix(3, 3);
@@ -69,12 +75,16 @@ class Renderer {
         sides = 360 / 5;
         center = {x: 0, y: 0};
         let s1_shape2_points = [];
+
         for(let i = 0; i <= 5; i++) {
             x = parseInt(center.x + 50 * Math.cos(a * Math.PI / 180));
             y = parseInt(center.y + 50 * Math.sin(a * Math.PI / 180));
             s1_shape2_points[i] = CG.Vector3(x, y, 1);
             a += sides;
         }
+
+        let bounce_matrix4 = new Matrix(3, 3);
+        bounce_matrix4 = CG.mat3x3Translate(bounce_matrix4, 2, 0);
 
         this.spin_matrix_trans[1] = new Matrix(3, 3);
         this.spin_matrix_trans[1] = CG.mat3x3Translate(this.spin_matrix_trans[1], 400, 100);
@@ -120,6 +130,45 @@ class Renderer {
         
         scale_matrix[0] = this.scale_matrix_trans[0].mult(this.scale_matrix_angel[0]);
 
+        //slide 4 model
+        this.trans4X = 5;
+        this.trans4Y = 0;
+        let a4 = 0;
+        let sides4 = 360 / 40;
+        let center4 = {x: 300, y: 500};
+        let x4;
+        let y4;
+        let circle_points4 = [];
+        this.spin_matrix_trans4 = [];
+        this.spin_matrix_angel4 = [];
+
+        for(let i = 0; i <= 50; i++) {
+            x4 = parseInt(center4.x + 100 * Math.cos(a4 * Math.PI / 180));
+            y4 = parseInt(center4.y + 100 * Math.sin(a4 * Math.PI / 180));
+            circle_points4[i] = CG.Vector3(x4, y4, 1);
+            
+            a4 += sides4;
+        }
+
+        sides4 = 360 / 50;
+        center4 = {x: 400, y: 300};
+        for(let i = 0; i <= 30; i++) {
+            x4 = parseInt(center4.x + 100 * Math.cos(a4 * Math.PI / 180));
+            y4 = parseInt(center4.y + 100 * Math.sin(a4 * Math.PI / 180));
+            circle_points4[i] = CG.Vector3(x4, y4, 1);
+            
+            a4 += sides4;
+        }
+        // slide 4
+        this.spin_matrix_trans1[0] = new Matrix(3, 3);
+        this.spin_matrix_trans1[0] = CG.mat3x3Translate(this.spin_matrix_trans1[0], 650, 400);
+
+        this.spin_matrix_angel1[0] = new Matrix(3, 3);
+        this.spin_matrix_angel1[0] = CG.mat3x3Rotate(this.spin_matrix_angel1[0], this.angle1[0] * Math.PI /180);
+
+        spin_matrix2[0] = this.spin_matrix_trans1[0].mult(this.spin_matrix_angel1[0]);
+
+
         this.models = {
             slide0: [
                 // example model (diamond) -> should be replaced with actual model
@@ -159,7 +208,24 @@ class Renderer {
                 transform: [scale_matrix[0]],
                 }
             ],
-            slide3: []
+            slide3: [
+            {
+                vertices: circle_points4,
+                transform: bounce_matrix4, 
+                
+                shapes: [[
+                    CG.Vector3(70, 70, 1),
+                    CG.Vector3(-70, 70, 1),
+                    CG.Vector3(-70, -70, 1),
+                    CG.Vector3(70, -70, 1)
+                ]],
+                //shape2: s1_shape2_points,
+                transform2: [spin_matrix2[0]],
+                //transform2: spin_matrix[1]
+
+            }
+                
+            ]
         };
     }
 
@@ -232,7 +298,7 @@ class Renderer {
                 break;
             case 2:
                 this.shrink[0] -= 0.03;
-                this.grow[0] -= 0.02;
+                this.grow[0] += 0.03;
 
                 for (let i = 0; i < 1; i++) {
                     this.scale_matrix_angel[i] = CG.mat3x3Scale(this.scale_matrix_angel[i], this.shrink[i], this.shrink[i]);
@@ -241,7 +307,15 @@ class Renderer {
 
                 break;
             case 3:
+                this.models.slide3[0].transform.values[0][2] += this.trans4X;
+                this.models.slide3[0].transform.values[1][2] += this.trans4Y;  
                 
+                this.angle1[0] += 0.4;
+
+                for (let i = 0; i < 1; i++) {
+                    this.spin_matrix_angel1[i] = CG.mat3x3Rotate(this.spin_matrix_angel1[i], this.angle1[i]);
+                    this.models.slide3[0].transform2[i] = this.spin_matrix_trans1[i].mult(this.spin_matrix_angel1[i]);
+                }
                 break;
         }
     }
@@ -287,10 +361,8 @@ class Renderer {
             points[i] = v;
         }
 
-        let teal = [0, 128, 128, 255];
-        this.drawConvexPolygon(points, teal);
-        //onsole.log(points[0].values[0][0]);
-    
+        let slide0color = [128, 0, 178, 255];
+        this.drawConvexPolygon(points, slide0color);    
     }
 
     //
@@ -300,14 +372,13 @@ class Renderer {
 
         for (let i = 0; i < 3; i++) {
             let points = [];
-            
+
             for (let j = 0; j < this.models.slide1[0].shapes[i].length; j++) {
                 let v = this.models.slide1[0].transform[i].mult(this.models.slide1[0].shapes[i][j]);
                 points[j] = v;
             }
             this.drawConvexPolygon(points, this.s1_colors[i]);
         }      
-        
     }
 
     //
@@ -321,7 +392,21 @@ class Renderer {
         for (let i = 0; i < this.models.slide2[0].shapes[0].length; i++) {
             let v = this.models.slide2[0].transform[0].mult(this.models.slide2[0].shapes[0][i]);
             points[i] = v;
+            console.log(v.values[0]);
+
+            if (v.values[0] < 255 && v.values[0] > 245) {
+                this.shrink[0] += 0.5;
+                console.log("1");
+            }
+            if (v.values[0] > 445) {
+                this.shrink[0] -= 0.5;
+                console.log("2");
+            }
+            
+            
         }
+
+        
         let color = [0, 128, 128, 255];
         this.drawConvexPolygon(points, color);
     }
@@ -331,7 +416,34 @@ class Renderer {
         // TODO: get creative!
         //   - animation should involve all three basic transformation types
         //     (translation, scaling, and rotation)
-        
+        let points = [];
+        let transform = this.models.slide3[0].transform;
+        //console.log(this.models.slide0[0].vertices[0]);
+
+        for (let i = 0; i < this.models.slide3[0].vertices.length; i++) {
+            let v = transform.mult(this.models.slide3[0].vertices[i]);
+            //console.log(v.values[0]);
+            if (v.values[0] > this.canvas.width - 200 || v.values[0] < 0) {
+                this.trans4X *= -1;
+            }
+            if (v.values[1] > this.canvas.height || v.values[1] < 0) {
+                this.trans4Y *= -1;
+            }
+            points[i] = v;
+        }
+
+        let color = [128, 128, 10, 255];
+        this.drawConvexPolygon(points, color);
+
+        for (let i = 0; i < 1; i++) {
+            points = [];
+
+            for (let j = 0; j < this.models.slide3[0].shapes[i].length; j++) {
+                let v = this.models.slide3[0].transform2[i].mult(this.models.slide3[0].shapes[i][j]);
+                points[j] = v;
+            }
+            this.drawConvexPolygon(points, [238, 238, 10, 255]);
+        }      
         
     }
     
