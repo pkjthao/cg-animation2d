@@ -35,6 +35,7 @@ class Renderer {
 
         //slide 2
         this.grow = [1.1];
+        this.s_offset = [-0.01]
         this.shrink = [0.9];
         this.scale_matrix_trans = [];
         this.scale_matrix_angel = [];
@@ -130,7 +131,8 @@ class Renderer {
         
         scale_matrix[0] = this.scale_matrix_trans[0].mult(this.scale_matrix_angel[0]);
 
-        //slide 4 model
+        //slide 3 
+        //model 1
         this.trans4X = 5;
         this.trans4Y = 0;
         let a4 = 0;
@@ -159,7 +161,7 @@ class Renderer {
             
             a4 += sides4;
         }
-        // slide 4
+        // model 2
         this.spin_matrix_trans1[0] = new Matrix(3, 3);
         this.spin_matrix_trans1[0] = CG.mat3x3Translate(this.spin_matrix_trans1[0], 650, 400);
 
@@ -297,8 +299,8 @@ class Renderer {
                 }
                 break;
             case 2:
-                this.shrink[0] -= 0.03;
-                this.grow[0] += 0.03;
+                this.shrink[0] += this.s_offset[0];
+                //this.grow[0] += 0.03;
 
                 for (let i = 0; i < 1; i++) {
                     this.scale_matrix_angel[i] = CG.mat3x3Scale(this.scale_matrix_angel[i], this.shrink[i], this.shrink[i]);
@@ -392,21 +394,30 @@ class Renderer {
         for (let i = 0; i < this.models.slide2[0].shapes[0].length; i++) {
             let v = this.models.slide2[0].transform[0].mult(this.models.slide2[0].shapes[0][i]);
             points[i] = v;
-            console.log(v.values[0]);
+            //console.log(v);
 
-            if (v.values[0] < 255 && v.values[0] > 245) {
-                this.shrink[0] += 0.5;
-                console.log("1");
-            }
-            if (v.values[0] > 445) {
-                this.shrink[0] -= 0.5;
-                console.log("2");
-            }
-            
+            // if (v.values[0] < 255 && v.values[0] > 245) {
+            //     this.shrink[0] += 0.5;
+            //     console.log("1");
+            // }
+            // if (v.values[0] > 445) {
+            //     this.shrink[0] -= 0.5;
+            //     console.log("2");
+            // }
             
         }
 
+        if (Math.round(points[0].values[0]) == Math.round(points[1].values[0])) {
+            this.s_offset[0] *= -1;
+            console.log(this.s_offset);
+        } 
         
+        if (points[0].values[1] > this.canvas.height - 100) {
+            this.s_offset[0] *= -1;
+            console.log(this.s_offset);
+        }
+
+        //console.log(points[0].values[0]);
         let color = [0, 128, 128, 255];
         this.drawConvexPolygon(points, color);
     }
