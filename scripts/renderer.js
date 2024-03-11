@@ -16,15 +16,18 @@ class Renderer {
         this.start_time = null;
         this.prev_time = null;
 
+        //slide 0
         this.transX = 5;
         this.transY = 2;
 
+        //slide 1
         this.angle = [0, 0, 0];
         this.spin_matrix_trans = [];
         this.spin_matrix_angel = [];
         let spin_matrix = [];
         this.s1_colors = []
 
+        //slide 2
         this.grow = [1.1];
         this.shrink = [0.9];
         this.scale_matrix_trans = [];
@@ -48,16 +51,6 @@ class Renderer {
 
         let bounce_matrix = new Matrix(3, 3);
         bounce_matrix = CG.mat3x3Translate(bounce_matrix, 2, 1);
-
-        //slide 2 models (SCALE)
-        this.scale_matrix_trans[0] = new Matrix(3, 3);
-        this.scale_matrix_trans[0] = CG.mat3x3Translate(this.scale_matrix_trans[0], 250, 400);
-
-        this.scale_matrix_angel[0] = new Matrix(3, 3);
-        this.scale_matrix_angel[0] = CG.mat3x3Scale(this.scale_matrix_angel[0], this.shrink[0]);
-        
-        scale_matrix[0] = this.scale_matrix_trans[0].mult(this.scale_matrix_angel[0]);
-
 
         //slide 1 models
         for (let i = 0; i < 3; i++) {
@@ -93,7 +86,6 @@ class Renderer {
 
 
         //model 3
-
         sides = 360 / 10;
 
         let s1_shape3_points = [];
@@ -119,6 +111,15 @@ class Renderer {
 
         spin_matrix[2] = this.spin_matrix_trans[2].mult(this.spin_matrix_angel[2]);
 
+        //slide 2 models (SCALE)
+        this.scale_matrix_trans[0] = new Matrix(3, 3);
+        this.scale_matrix_trans[0] = CG.mat3x3Translate(this.scale_matrix_trans[0], 250, 400);
+
+        this.scale_matrix_angel[0] = new Matrix(3, 3);
+        this.scale_matrix_angel[0] = CG.mat3x3Scale(this.scale_matrix_angel[0], this.shrink[0]);
+        
+        scale_matrix[0] = this.scale_matrix_trans[0].mult(this.scale_matrix_angel[0]);
+
         this.models = {
             slide0: [
                 // example model (diamond) -> should be replaced with actual model
@@ -143,9 +144,7 @@ class Renderer {
                         CG.Vector3(-100, -100, 1),
                         CG.Vector3(100, -100, 1)
                     ], s1_shape2_points, s1_shape3_points],
-                    //shape2: s1_shape2_points,
                     transform: [spin_matrix[0], spin_matrix[1], spin_matrix[2]],
-                    //transform2: spin_matrix[1]
                 }
             ],
             slide2: [
