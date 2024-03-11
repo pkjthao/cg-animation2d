@@ -299,7 +299,7 @@ class Renderer {
                 break;
             case 2:
                 this.shrink[0] -= 0.03;
-                this.grow[0] += 0.02;
+                this.grow[0] += 0.03;
 
                 for (let i = 0; i < 1; i++) {
                     this.scale_matrix_angel[i] = CG.mat3x3Scale(this.scale_matrix_angel[i], this.shrink[i], this.shrink[i]);
@@ -396,10 +396,12 @@ class Renderer {
             console.log(v.values[0]);
 
             if (v.values[0] < 255 && v.values[0] > 245) {
-                this.shrink = this.grow;
+                this.shrink[0] += 0.5;
+                console.log("1");
             }
-            if (v.values[0] > 445 && v.values[0] < -445) {
-                this.grow = this.shrink;
+            if (v.values[0] > 445) {
+                this.shrink[0] -= 0.5;
+                console.log("2");
             }
             
             
