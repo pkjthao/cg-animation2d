@@ -22,7 +22,6 @@ class Renderer {
         // this.transX = 5;
         // this.transY = 2;
 
-        //slide 1
         this.angle = [0, 0, 0];
         this.spin_matrix_trans = [];
         this.spin_matrix_angel = [];
@@ -35,13 +34,27 @@ class Renderer {
         let spin_matrix2 = [];
 
 
-        //slide 2
         this.grow = [1.1];
-        this.s_offset = [-0.01]
+        this.s_offset = [-0.01]; //;
         this.shrink = [0.9];
         this.scale_matrix_trans = [];
         this.scale_matrix_angel = [];
         let scale_matrix = [];
+
+        this.grow5 = [1.1];
+        this.s_offset5 = [-0.02]; //;
+        this.shrink5 = [0.9];
+        this.scale_matrix_trans5 = [];
+        this.scale_matrix_angel5 = [];
+        let scale_matrix5 = [];
+        
+        this.grow9 = [1.1];
+        this.s_offset9 = [-0.02]; //;
+        this.shrink9 = [0.3];
+        this.scale_matrix_trans9 = [];
+        this.scale_matrix_angel9 = [];
+        let scale_matrix9 = [];
+
 
         //slide 0 model
         let a = 0;
@@ -60,6 +73,25 @@ class Renderer {
 
         let bounce_matrix = new Matrix(3, 3);
         bounce_matrix = CG.mat3x3Translate(bounce_matrix, 2, 1);
+
+        //slide 2 models (SCALE)
+        this.scale_matrix_trans[0] = new Matrix(3, 3);
+        this.scale_matrix_trans[0] = CG.mat3x3Translate(this.scale_matrix_trans[0], 250, 400);
+
+        this.scale_matrix_angel[0] = new Matrix(3, 3);
+        this.scale_matrix_angel[0] = CG.mat3x3Scale(this.scale_matrix_angel[0], this.grow[0], this.shrink[0]);
+        
+        scale_matrix[0] = this.scale_matrix_trans[0].mult(this.scale_matrix_angel[0]);
+
+
+        this.scale_matrix_trans5[0] = new Matrix(3, 3);
+        this.scale_matrix_trans5[0] = CG.mat3x3Translate(this.scale_matrix_trans5[0], 250, 300);
+
+        this.scale_matrix_angel5[0] = new Matrix(3, 3);
+        this.scale_matrix_angel5[0] = CG.mat3x3Scale(this.scale_matrix_angel5[0], this.shrink5[0], this.shrink5[0]);
+        
+        scale_matrix5[0] = this.scale_matrix_trans5[0].mult(this.scale_matrix_angel5[0]);
+
 
         //slide 1 models
         for (let i = 0; i < 3; i++) {
@@ -124,16 +156,8 @@ class Renderer {
 
         spin_matrix[2] = this.spin_matrix_trans[2].mult(this.spin_matrix_angel[2]);
 
-        //slide 2 models (SCALE)
-        this.scale_matrix_trans[0] = new Matrix(3, 3);
-        this.scale_matrix_trans[0] = CG.mat3x3Translate(this.scale_matrix_trans[0], 250, 400);
 
-        this.scale_matrix_angel[0] = new Matrix(3, 3);
-        this.scale_matrix_angel[0] = CG.mat3x3Scale(this.scale_matrix_angel[0], this.shrink[0]);
-        
-        scale_matrix[0] = this.scale_matrix_trans[0].mult(this.scale_matrix_angel[0]);
-
-        //slide 3 
+        //slide 3
         //model 1
         this.trans4X = 5;
         this.trans4Y = 0;
@@ -172,6 +196,15 @@ class Renderer {
 
         spin_matrix2[0] = this.spin_matrix_trans1[0].mult(this.spin_matrix_angel1[0]);
 
+        //model 3
+        this.scale_matrix_trans9[0] = new Matrix(3, 3);
+        this.scale_matrix_trans9[0] = CG.mat3x3Translate(this.scale_matrix_trans9[0], 90, 350);
+
+        this.scale_matrix_angel9[0] = new Matrix(3, 3);
+        this.scale_matrix_angel9[0] = CG.mat3x3Scale(this.scale_matrix_angel9[0], this.shrink9[0], this.shrink9[0]);
+        
+        scale_matrix9[0] = this.scale_matrix_trans9[0].mult(this.scale_matrix_angel9[0]);
+
 
         this.models = {
             slide0: [
@@ -188,7 +221,9 @@ class Renderer {
                         CG.Vector3(-100, -100, 1),
                         CG.Vector3(100, -100, 1)
                     ], s1_shape2_points, s1_shape3_points],
+                    //shape2: s1_shape2_points,
                     transform: [spin_matrix[0], spin_matrix[1], spin_matrix[2]],
+                    //transform2: spin_matrix[1]
                 }
             ],
             slide2: [
@@ -200,7 +235,16 @@ class Renderer {
                         CG.Vector3(100, -100, 1)
                     ]],
                 
-                transform: [scale_matrix[0]],
+                    transform: [scale_matrix[0]],
+
+                    shapes5: [[
+                        CG.Vector3(100, 100, 1),
+                        CG.Vector3(-100, 100, 1),
+                        CG.Vector3(-100, -100, 1),
+                        CG.Vector3(100, -100, 1)
+                    ]],
+            
+                    transform5: [scale_matrix5[0]],
                 }
             ],
             slide3: [
@@ -218,6 +262,14 @@ class Renderer {
                 transform2: [spin_matrix2[0]],
                 //transform2: spin_matrix[1]
 
+                shapes9: [[
+                    CG.Vector3(10, 100, 1),
+                    CG.Vector3(-100, 100, 1),
+                    CG.Vector3(-100, -200, 1),
+                    CG.Vector3(100, -100, 1)
+                ]],
+            
+                transform9: [scale_matrix9[0]],
             }
                 
             ]
@@ -293,11 +345,18 @@ class Renderer {
                 break;
             case 2:
                 this.shrink[0] += this.s_offset[0];
-                //this.grow[0] += 0.03;
+                this.grow[0] += this.s_offset[0];
 
                 for (let i = 0; i < 1; i++) {
-                    this.scale_matrix_angel[i] = CG.mat3x3Scale(this.scale_matrix_angel[i], this.shrink[i], this.shrink[i]);
+                    this.scale_matrix_angel[i] = CG.mat3x3Scale(this.scale_matrix_angel[i], this.grow[i], this.shrink[i]);
                     this.models.slide2[0].transform[i] = this.scale_matrix_trans[i].mult(this.scale_matrix_angel[i]);
+                }
+
+                this.shrink5[0] += this.s_offset5[0];
+
+                for (let i = 0; i < 1; i++) {
+                    this.scale_matrix_angel5[i] = CG.mat3x3Scale(this.scale_matrix_angel5[i], this.shrink5[i], this.shrink5[i]);
+                    this.models.slide2[0].transform5[i] = this.scale_matrix_trans5[i].mult(this.scale_matrix_angel5[i]);
                 }
 
                 break;
@@ -310,6 +369,13 @@ class Renderer {
                 for (let i = 0; i < 1; i++) {
                     this.spin_matrix_angel1[i] = CG.mat3x3Rotate(this.spin_matrix_angel1[i], this.angle1[i]);
                     this.models.slide3[0].transform2[i] = this.spin_matrix_trans1[i].mult(this.spin_matrix_angel1[i]);
+                }
+
+                this.shrink9[0] += this.s_offset9[0];
+
+                for (let i = 0; i < 1; i++) {
+                    this.scale_matrix_angel9[i] = CG.mat3x3Scale(this.scale_matrix_angel9[i], this.shrink9[i], this.shrink9[i]);
+                    this.models.slide3[0].transform9[i] = this.scale_matrix_trans9[i].mult(this.scale_matrix_angel9[i]);
                 }
                 break;
         }
@@ -387,32 +453,43 @@ class Renderer {
         for (let i = 0; i < this.models.slide2[0].shapes[0].length; i++) {
             let v = this.models.slide2[0].transform[0].mult(this.models.slide2[0].shapes[0][i]);
             points[i] = v;
-            //console.log(v);
-
-            // if (v.values[0] < 255 && v.values[0] > 245) {
-            //     this.shrink[0] += 0.5;
-            //     console.log("1");
-            // }
-            // if (v.values[0] > 445) {
-            //     this.shrink[0] -= 0.5;
-            //     console.log("2");
-            // }
-            
         }
 
         if (Math.round(points[0].values[0]) == Math.round(points[1].values[0])) {
             this.s_offset[0] *= -1;
             console.log(this.s_offset);
         } 
-        
+
         if (points[0].values[1] > this.canvas.height - 100) {
             this.s_offset[0] *= -1;
             console.log(this.s_offset);
         }
 
         //console.log(points[0].values[0]);
+        
         let color = [0, 128, 128, 255];
         this.drawConvexPolygon(points, color);
+
+        let points2 = [];
+        for (let i = 0; i < this.models.slide2[0].shapes5[0].length; i++) {
+            let v = this.models.slide2[0].transform5[0].mult(this.models.slide2[0].shapes5[0][i]);
+            points2[i] = v;
+        }
+
+        if (Math.round(points2[0].values[0]) == Math.round(points2[1].values[0])) {
+            this.s_offset5[0] *= -1;
+            console.log(this.s_offset5);
+        } 
+
+        if (points2[0].values[1] > this.canvas.height - 70) {
+            this.s_offset5[0] *= -1;
+            console.log(this.s_offset5);
+        }
+
+        //console.log(points[0].values[0]);
+        
+        color = [25, 118, 238, 70];
+        this.drawConvexPolygon(points2, color);
     }
 
     //
@@ -449,6 +526,27 @@ class Renderer {
             this.drawConvexPolygon(points, [238, 238, 10, 255]);
         }      
         
+        let points1 = [];
+        
+        for (let i = 0; i < this.models.slide3[0].shapes9[0].length; i++) {
+            let v = this.models.slide3[0].transform9[0].mult(this.models.slide3[0].shapes9[0][i]);
+            points1[i] = v;
+        }
+
+        if (Math.round(points1[0].values[0]) == Math.round(points1[1].values[0])) {
+            this.s_offset9[0] *= -1;
+            console.log(this.s_offset9);
+        } 
+
+        if (points1[0].values[1] > this.canvas.height - 200) {
+            this.s_offset9[0] *= -1;
+            console.log(this.s_offset9);
+        }
+
+        //console.log(points[0].values[0]);
+        let color9 = [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), 255];
+    
+        this.drawConvexPolygon(points1, color9);
     }
     
     // vertex_list:  array of object [Matrix(3, 1), Matrix(3, 1), ..., Matrix(3, 1)]
