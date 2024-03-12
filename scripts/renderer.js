@@ -17,8 +17,10 @@ class Renderer {
         this.prev_time = null;
 
         //slide 0
-        this.transX = 5;
-        this.transY = 2;
+        this.transX = (Math.random() * 15) - 5;
+        this.transY = (Math.random() * 15) - 5;
+        // this.transX = 5;
+        // this.transY = 2;
 
         //slide 1
         this.angle = [0, 0, 0];
@@ -173,16 +175,7 @@ class Renderer {
 
         this.models = {
             slide0: [
-                // example model (diamond) -> should be replaced with actual model
                 {
-                    // vertices: [
-                    //     CG.Vector3(400, 150, 1),
-                    //     CG.Vector3(500, 300, 1),
-                    //     CG.Vector3(400, 450, 1),
-                    //     CG.Vector3(300, 300, 1)
-                    // ],
-                    // transform: null
-
                     vertices: circle_points,
                     transform: bounce_matrix
                 }
